@@ -87,8 +87,7 @@ class Database:
         return self.conn.execute("SELECT * FROM pending WHERE status = 'pending'").fetchall()
 
     def count_pending(self):
-        result = self.conn.execute("SELECT COUNT(*) FROM pending WHERE status = 'pending'").fetchone()
-        return result[0] if result else 0
+        return self.conn.execute("SELECT COUNT(*) FROM pending WHERE status = 'pending'").fetchone()[0]
 
     def approve_pending(self, pending_id):
         p = self.conn.execute("SELECT * FROM pending WHERE id = ?", (pending_id,)).fetchone()
@@ -105,12 +104,10 @@ class Database:
         self.conn.commit()
 
     def count_users(self):
-        result = self.conn.execute("SELECT COUNT(*) FROM users").fetchone()
-        return result[0] if result else 0
+        return self.conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
 
     def count_files(self):
-        result = self.conn.execute("SELECT COUNT(*) FROM files").fetchone()
-        return result[0] if result else 0
+        return self.conn.execute("SELECT COUNT(*) FROM files").fetchone()[0]
 
     def search_files(self, keyword):
         return self.conn.execute(
@@ -122,26 +119,26 @@ class Database:
         self.conn.execute("DELETE FROM files WHERE subject_id = ?", (subject_id,))
         self.conn.execute("DELETE FROM subjects WHERE id = ?", (subject_id,))
         self.conn.commit()
-        
+
     def get_all_users(self):
         return self.conn.execute(
             "SELECT id, name, username FROM users ORDER BY joined_at DESC"
         ).fetchall()
 
+    # --- الدوال الجديدة التي تم إضافتها لدعم الإدارة ---
+
     def get_all_files_by_subject(self, subject_id):
+        """لجلب كافة الملفات في مادة معينة بغض النظر عن نوعها (لأغراض الإدارة)"""
         return self.conn.execute("SELECT * FROM files WHERE subject_id = ?", (subject_id,)).fetchall()
 
     def delete_file(self, file_id):
+        """لحذف ملف نهائياً من قاعدة البيانات"""
         self.conn.execute("DELETE FROM files WHERE id = ?", (file_id,))
         self.conn.commit()
 
     def update_file_title(self, file_id, new_title):
+        """لتعديل اسم الملف"""
         self.conn.execute("UPDATE files SET title = ? WHERE id = ?", (new_title, file_id))
         self.conn.commit()
-    def get_all_users(self):
-        # هذه الدالة تجلب كل المستخدمين مرتبين من الأحدث للأقدم
-        return self.conn.execute(
-            "SELECT id, name, username FROM users ORDER BY joined_at DESC"
-        ).fetchall()
 
 db = Database()
