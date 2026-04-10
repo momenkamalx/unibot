@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python311"]
+nixPkgs = ["python311"] # إجبار النظام على إصدار 3.11
 
 [phases.install]
 cmds = ["pip install -r requirements.txt"]
