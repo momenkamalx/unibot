@@ -87,7 +87,8 @@ class Database:
         return self.conn.execute("SELECT * FROM pending WHERE status = 'pending'").fetchall()
 
     def count_pending(self):
-        return self.conn.execute("SELECT COUNT(*) FROM pending WHERE status = 'pending'").fetchone()[0]
+        result = self.conn.execute("SELECT COUNT(*) FROM pending WHERE status = 'pending'").fetchone()
+        return result[0] if result else 0
 
     def approve_pending(self, pending_id):
         p = self.conn.execute("SELECT * FROM pending WHERE id = ?", (pending_id,)).fetchone()
@@ -104,10 +105,12 @@ class Database:
         self.conn.commit()
 
     def count_users(self):
-        return self.conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        result = self.conn.execute("SELECT COUNT(*) FROM users").fetchone()
+        return result[0] if result else 0
 
     def count_files(self):
-        return self.conn.execute("SELECT COUNT(*) FROM files").fetchone()[0]
+        result = self.conn.execute("SELECT COUNT(*) FROM files").fetchone()
+        return result[0] if result else 0
 
     def search_files(self, keyword):
         return self.conn.execute(
@@ -117,4 +120,23 @@ class Database:
 
     def delete_subject(self, subject_id):
         self.conn.execute("DELETE FROM files WHERE subject_id = ?", (subject_id,))
-        self.conn.execute("DELETE FROM subjects
+        self.conn.execute("DELETE FROM subjects WHERE id = ?", (subject_id,))
+        self.conn.commit()
+        
+    def get_all_users(self):
+        return self.conn.execute(
+            "SELECT id, name, username FROM users ORDER BY joined_at DESC"
+        ).fetchall()
+
+    def get_all_files_by_subject(self, subject_id):
+        return self.conn.execute("SELECT * FROM files WHERE subject_id = ?", (subject_id,)).fetchall()
+
+    def delete_file(self, file_id):
+        self.conn.execute("DELETE FROM files WHERE id = ?", (file_id,))
+        self.conn.commit()
+
+    def update_file_title(self, file_id, new_title):
+        self.conn.execute("UPDATE files SET title = ? WHERE id = ?", (new_title, file_id))
+        self.conn.commit()
+
+db = Database()
