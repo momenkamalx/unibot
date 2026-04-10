@@ -124,4 +124,15 @@ class Database:
         return self.conn.execute(
             "SELECT id, name, username FROM users ORDER BY joined_at DESC"
         ).fetchall()
+        def get_all_files_by_subject(self, subject_id):
+        # هذه الدالة تجلب كل ملفات مادة معينة للإدارة
+        return self.query("SELECT * FROM files WHERE subject_id = ?", (subject_id,))
+
+    def delete_file(self, file_id):
+        # دالة حذف الملف نهائياً
+        return self.execute("DELETE FROM files WHERE id = ?", (file_id,))
+
+    def update_file_title(self, file_id, new_title):
+        # دالة تعديل الاسم
+        return self.execute("UPDATE files SET title = ? WHERE id = ?", (new_title, file_id))
 db = Database()
