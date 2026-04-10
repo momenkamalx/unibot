@@ -138,5 +138,10 @@ class Database:
     def update_file_title(self, file_id, new_title):
         self.conn.execute("UPDATE files SET title = ? WHERE id = ?", (new_title, file_id))
         self.conn.commit()
+    def get_all_users(self):
+        # هذه الدالة تجلب كل المستخدمين مرتبين من الأحدث للأقدم
+        return self.conn.execute(
+            "SELECT id, name, username FROM users ORDER BY joined_at DESC"
+        ).fetchall()
 
 db = Database()
